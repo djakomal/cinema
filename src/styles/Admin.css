@@ -1,0 +1,81 @@
+
+/* ===========================
+   Dashboard Cards Animations
+   =========================== */
+.dashboard-card {
+  animation: fadeInUp 0.6s ease forwards;
+  transition: all 0.3s ease;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-5px) scale(1.03);
+  border-color: var(--accent-orange);
+  box-shadow: 0 10px 30px rgba(243, 156, 18, 0.2);
+}
+
+.dashboard-icon {
+  font-size: 60px;
+  margin-bottom: 20px;
+  animation: floatIcon 3s ease-in-out infinite;
+}
+
+/* ===========================
+   Buttons Animations
+   =========================== */
+.btn-danger {
+  animation: fadeInUp 0.5s ease forwards;
+  transition: all 0.3s ease;
+}
+
+.btn-danger:hover {
+  background-color: #c0392b;
+  animation: pulse 0.6s ease forwards;
+}
+
+/* ===========================
+   Form Animation
+   =========================== */
+.admin-form-container,
+.login-page {
+  animation: fadeInUp 0.7s ease forwards;
+}
+
+/* Success & Error Messages */
+.success-message,
+.error-container {
+  animation: fadeInUp 0.5s ease forwards;
+}
+/* ===========================
+   Animations Générales
+   =========================== */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes floatIcon {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+/* ===========================
+   Responsive Adjustments
+   =========================== */
+@media (max-width: 768px) {
+  .dashboard-card {
+    margin: 0 auto;
+  }   
+  .dashboard-grid {
+    grid-template-columns: 1fr !important;
+  }   
+}
