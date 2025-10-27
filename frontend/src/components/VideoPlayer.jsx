@@ -1,7 +1,6 @@
 
 
 import React, { useState } from 'react';
-
  function VideoPlayer({ video }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const API_URL = 'http://localhost:5000';
