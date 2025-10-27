@@ -1,8 +1,7 @@
 import axios from 'axios';
 
 // Utiliser les variables d'environnement
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-export const UPLOADS_URL = process.env.REACT_APP_UPLOADS_URL || 'http://localhost:5000';
+const API_URL = process.env.REACT_APP_API_URL || 'https://cinema-qfbf.onrender.com/api';
 
 // Créer une instance axios
 const api = axios.create({
