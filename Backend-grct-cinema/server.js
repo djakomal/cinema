@@ -2,6 +2,7 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+// config db 
 const connectDB = require('./Config/db');
 
 // Charger les variables d'environnement
