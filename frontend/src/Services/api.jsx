@@ -74,4 +74,18 @@ export const updateVideo = (id, data) => {
 };
 export const deleteVideo = (id) => api.delete(`/videos/${id}`);
 
+// Photoc
+export const getPhotocards = () => api.get('/photo');
+export const getPhotocard = (id) => api.get(`/photo/${id}`);
+export const createPhotocard = (formData) => api.post('/photo', formData, {
+  headers: { 'Content-Type': 'multipart/form-data' }
+});
+export const updatePhotocard = (id, data) => {
+  const isFormData = data instanceof FormData;
+  return api.put(`/photo/${id}`, data, {
+    headers: isFormData ? { 'Content-Type': 'multipart/form-data' } : {}
+  });
+};
+export const deletePhotocard = (id) => api.delete(`/photo/${id}`);
+
 export default api;

@@ -17,6 +17,14 @@ function Dashboard() {
       title: 'Gérer les Vidéos',
       description: 'Ajouter, modifier ou supprimer des vidéos',
       stats: '24 vidéos'
+    },
+
+    {
+      path: '/admin/photos',
+      icon: '🎬',
+      title: 'Gérer les photos',
+      description: 'Ajouter, modifier ou supprimer des photo',
+      stats: '250 Photo'
     }
   ];
 

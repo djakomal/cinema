@@ -23,6 +23,9 @@ function Home() {
               <Link to="/projects" className="btn btn-secondary">
                 Voir nos projets
               </Link>
+                  <Link to="/photo" className="btn btn-secondary">
+                Voir nos activités
+              </Link>
             </div>
           </div>
         </div>
