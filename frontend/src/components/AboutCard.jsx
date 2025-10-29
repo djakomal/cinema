@@ -8,7 +8,7 @@ function AboutCard() {
             
             <div className="about-content">
                 <p className="about-description">
-                    Fondé en 2015, le GRCT est une association dédiée à la promotion du cinéma au Togo.
+                    Fondé en 2014, le GRCT est une association dédiée à la promotion du cinéma au Togo.
                     Nous organisons des projections, ateliers et événements pour sensibiliser et éduquer le public.
                 </p>
                 <p className="about-description">
