@@ -33,6 +33,7 @@ function Navbar() {
             <Link to="/actors" onClick={() => setIsOpen(false)}>Acteurs</Link>
             <Link to="/projects" onClick={() => setIsOpen(false)}>Projets</Link>
             <Link to="/photo"onClick={()=> setIsOpen(false)}>Activité</Link>
+            <Link to="/about" onClick={() => setIsOpen(false)}>À propos</Link>
             
             {showAdmin && (
               <Link 

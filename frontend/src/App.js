@@ -28,6 +28,7 @@ import './styles/Navbar.css';
 import './styles/Admin.css';
 import './styles/Actors.css';
 import './styles/photocard.css';
+import AboutCard from './components/AboutCard';
 
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/actors" element={<Actors />} />
           <Route path="/projects" element={<Projects />} />
+          <Route path="/about" element={<AboutCard />} />
           <Route path="/photo" element={<Photo />} />
           <Route path="/admin/login" element={<Login />} />
           <Route 
