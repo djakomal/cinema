@@ -1,5 +1,3 @@
-
-
 /* Hero Section */
 .hero {
   min-height: 80vh;
@@ -12,27 +10,79 @@
   overflow: hidden;
 }
 
+/* Particules dorées flottantes */
 .hero::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100%;
+  height: 100%;
   background-image: 
-    repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(243, 156, 18, 0.03) 2px,
-      rgba(243, 156, 18, 0.03) 4px
-    );
+    radial-gradient(circle, rgba(243, 156, 18, 0.3) 2px, transparent 2px),
+    radial-gradient(circle, rgba(255, 200, 87, 0.2) 1px, transparent 1px),
+    radial-gradient(circle, rgba(243, 156, 18, 0.4) 3px, transparent 3px);
+  background-size: 200px 200px, 150px 150px, 250px 250px;
+  background-position: 0 0, 50px 50px, 100px 100px;
+  animation: floatParticles 20s linear infinite;
   pointer-events: none;
+  opacity: 0.3;
+}
+
+/* Vagues lumineuses */
+.hero::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(243, 156, 18, 0.15) 0%,
+    transparent 50%
+  );
+  animation: pulse 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Animation des particules */
+@keyframes floatParticles {
+  0% {
+    transform: translateY(0) translateX(0);
+  }
+  100% {
+    transform: translateY(-100px) translateX(100px);
+  }
+}
+
+/* Animation de pulsation */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.2) rotate(180deg);
+    opacity: 0.15;
+  }
 }
 
 .hero-content {
   position: relative;
   z-index: 1;
+  animation: fadeInUp 1s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .hero-title {
@@ -40,10 +90,40 @@
   font-weight: 700;
   margin-bottom: 20px;
   letter-spacing: -2px;
+  animation: fadeInScale 1.2s ease-out 0.3s both;
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .highlight {
-  color: var(--accent-orange);
+  background: linear-gradient(45deg, #f39c12, #ffd966, #f39c12, #ffd966);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 4s ease infinite;
+}
+
+/* Animation du dégradé */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .hero-subtitle {
@@ -53,6 +133,7 @@
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
+  animation: fadeInUp 1s ease-out 0.5s both;
 }
 
 .hero-buttons {
@@ -60,11 +141,41 @@
   gap: 20px;
   justify-content: center;
   flex-wrap: wrap;
+  animation: fadeInUp 1s ease-out 0.7s both;
 }
 
 /* Features Section */
 .features {
   background-color: var(--primary-black);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Particules subtiles pour features */
+.features::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle, rgba(243, 156, 18, 0.15) 1px, transparent 1px),
+    radial-gradient(circle, rgba(255, 200, 87, 0.1) 2px, transparent 2px);
+  background-size: 300px 300px, 200px 200px;
+  background-position: 0 0, 100px 100px;
+  animation: floatParticlesSlow 30s linear infinite;
+  pointer-events: none;
+  opacity: 0.2;
+}
+
+@keyframes floatParticlesSlow {
+  0% {
+    transform: translateY(0) translateX(0);
+  }
+  100% {
+    transform: translateY(-50px) translateX(50px);
+  }
 }
 
 .features-grid {
@@ -72,6 +183,8 @@
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 30px;
   margin-top: 40px;
+  position: relative;
+  z-index: 1;
 }
 
 .feature-card {
@@ -81,6 +194,53 @@
   border: 1px solid var(--border-color);
   text-align: center;
   transition: all 0.3s ease;
+  animation: fadeInUp 0.8s ease-out;
+  animation-fill-mode: both;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Lueur animée sur hover */
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #f39c12, #ffd966, #f39c12, #ffd966);
+  background-size: 400% 400%;
+  border-radius: 12px;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  animation: borderGlow 4s ease infinite;
+}
+
+@keyframes borderGlow {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.feature-card:hover::before {
+  opacity: 1;
+}
+
+/* Délai d'animation pour chaque carte */
+.feature-card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.feature-card:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.feature-card:nth-child(3) {
+  animation-delay: 0.3s;
 }
 
 .feature-card:hover {
@@ -92,6 +252,32 @@
 .feature-icon {
   font-size: 60px;
   margin-bottom: 20px;
+  animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.feature-card:hover .feature-icon {
+  animation: spin 0.6s ease-in-out;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.2);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
 }
 
 .feature-card h3 {
@@ -119,6 +305,30 @@
   overflow: hidden;
   border: 1px solid var(--border-color);
   transition: all 0.3s ease;
+  animation: fadeInScale 0.8s ease-out;
+  animation-fill-mode: both;
+  position: relative;
+}
+
+/* Lueur pour video cards */
+.video-card::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #f39c12, #ffd966, #f39c12, #ffd966);
+  background-size: 400% 400%;
+  border-radius: 12px;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  animation: borderGlow 4s ease infinite;
+}
+
+.video-card:hover::before {
+  opacity: 1;
 }
 
 .video-card:hover {
@@ -146,6 +356,11 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.video-card:hover .video-thumbnail img {
+  transform: scale(1.05);
 }
 
 .play-button {
@@ -153,11 +368,13 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  transition: transform 0.3s ease;
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 0 20px rgba(243, 156, 18, 0.8));
 }
 
 .video-thumbnail:hover .play-button {
-  transform: translate(-50%, -50%) scale(1.1);
+  transform: translate(-50%, -50%) scale(1.2);
+  filter: drop-shadow(0 0 30px rgba(243, 156, 18, 1));
 }
 
 .video-player {
@@ -176,6 +393,11 @@
   font-size: 20px;
   margin-bottom: 10px;
   color: var(--accent-orange);
+  transition: color 0.3s ease;
+}
+
+.video-card:hover .video-info h3 {
+  color: #ffd966;
 }
 
 .video-info p {
@@ -199,5 +421,11 @@
   .features-grid {
     grid-template-columns: 1fr;
   }
+  
+  /* Réduire les animations sur mobile pour les performances */
+  .hero::before,
+  .hero::after,
+  .features::before {
+    animation-duration: 40s;
+  }
 }
-
