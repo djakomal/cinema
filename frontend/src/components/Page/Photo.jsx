@@ -17,20 +17,48 @@ function Photo() {
   const fetchPhotocards = async () => {
     try {
       setLoading(true);
-      const response = await getPhotocards();
-      console.log('Photocards reçues:', response.data); // Debug
-      setPhotocards(response.data || []); // Assurer un tableau vide par défaut
       setError('');
+      
+      console.log('🔍 Tentative de chargement des photocards...');
+      const response = await getPhotocards();
+      
+      console.log('✅ Réponse reçue:', response);
+      console.log('📦 Données:', response.data);
+      
+      if (!response.data) {
+        throw new Error('Aucune donnée reçue du serveur');
+      }
+      
+      setPhotocards(Array.isArray(response.data) ? response.data : []);
+      console.log(`✅ ${response.data.length} photocard(s) chargée(s)`);
+      
     } catch (err) {
-      console.error('Erreur lors du chargement des photocards:', err);
-      setError('Impossible de charger les photocards. Vérifiez que le backend est démarré.');
+      console.error('❌ Erreur complète:', err);
+      console.error('❌ Message:', err.message);
+      console.error('❌ Response:', err.response);
+      console.error('❌ Response data:', err.response?.data);
+      console.error('❌ Status:', err.response?.status);
+      
+      let errorMessage = 'Impossible de charger les photocards.';
+      
+      if (err.response) {
+        // Le serveur a répondu avec un code d'erreur
+        errorMessage += ` Erreur ${err.response.status}: ${err.response.data?.message || err.response.statusText}`;
+      } else if (err.request) {
+        // La requête a été faite mais pas de réponse
+        errorMessage += ' Le serveur ne répond pas. Vérifiez que le backend est démarré.';
+      } else {
+        // Erreur lors de la configuration de la requête
+        errorMessage += ` ${err.message}`;
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
   const openGallery = (photocard, photoIndex = 0) => {
-    // Vérifier que photocard existe et a des photos
     if (!photocard || !photocard.photos) {
       console.error('Photocard invalide:', photocard);
       return;
@@ -101,8 +129,10 @@ function Photo() {
     );
   }
 
-  const API_URL = 'http://localhost:5000';
-
+  // Utiliser l'URL depuis les variables d'environnement
+//   const API_URL = process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000';
+//   const API_URL = process.env.REACT_APP_UPLOADS_URL || 'http://localhost:5000';
+const API_URL = 'http://localhost:5000';
   return (
     <div className="photocard-gallery-page section fade-in">
       <div className="container">
@@ -116,7 +146,6 @@ function Photo() {
         ) : (
           <div className="photocards-grid">
             {photocards.map(photocard => {
-              // Vérifier que photocard et photos existent
               if (!photocard || !photocard.photos) {
                 console.warn('Photocard invalide:', photocard);
                 return null;
@@ -134,11 +163,9 @@ function Photo() {
         )}
       </div>
 
-      {/* Modal de galerie photo */}
       {selectedPhotocard && selectedPhotocard.photos && (
         <div className="photo-gallery-modal" onClick={closeGallery}>
           <div className="gallery-content" onClick={(e) => e.stopPropagation()}>
-            {/* Bouton fermer */}
             <button 
               className="close-gallery" 
               onClick={closeGallery}
@@ -147,7 +174,6 @@ function Photo() {
               ×
             </button>
 
-            {/* Image principale */}
             <div className="gallery-image-container">
               <img
                 src={`${API_URL}${
@@ -161,7 +187,6 @@ function Photo() {
                 }}
               />
 
-              {/* Boutons de navigation */}
               {Array.isArray(selectedPhotocard.photos) && selectedPhotocard.photos.length > 1 && (
                 <>
                   <button 
@@ -179,7 +204,6 @@ function Photo() {
                     ›
                   </button>
 
-                  {/* Indicateur */}
                   <div className="gallery-indicator">
                     {currentPhotoIndex + 1} / {selectedPhotocard.photos.length}
                   </div>
@@ -187,7 +211,6 @@ function Photo() {
               )}
             </div>
 
-            {/* Informations de la photocard */}
             <div className="gallery-info">
               {selectedPhotocard.title && <h2>{selectedPhotocard.title}</h2>}
               {selectedPhotocard.description && <p className="photocard-description">{selectedPhotocard.description}</p>}
@@ -198,7 +221,6 @@ function Photo() {
               )}
             </div>
 
-            {/* Miniatures */}
             {Array.isArray(selectedPhotocard.photos) && selectedPhotocard.photos.length > 1 && (
               <div className="gallery-thumbnails">
                 {selectedPhotocard.photos.map((photo, index) => (
@@ -209,7 +231,11 @@ function Photo() {
                     className={`thumbnail ${index === currentPhotoIndex ? 'active' : ''}`}
                     onClick={() => setCurrentPhotoIndex(index)}
                     onError={(e) => {
-                      e.target.src = 'https://via.placeholder.com/80x80?text=N/A';
+                         e.target.style.display = 'none';
+                        const placeholder = document.createElement('div');
+                        placeholder.style.cssText = 'width:100%;height:100%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;color:#999;';
+                        placeholder.textContent = '📷 Photo indisponible';
+                        e.target.parentElement.appendChild(placeholder);
                     }}
                   />
                 ))}

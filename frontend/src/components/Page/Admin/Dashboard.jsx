@@ -21,7 +21,7 @@ function Dashboard() {
 
     {
       path: '/admin/photos',
-      icon: '🎬',
+      icon: '🖼️',
       title: 'Gérer les photos',
       description: 'Ajouter, modifier ou supprimer des photo',
       stats: '250 Photo'

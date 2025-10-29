@@ -5,7 +5,7 @@ const fs = require('fs');
 
 // Créer les dossiers s'ils n'existent pas
 const createUploadDirs = () => {
-  const dirs = ['uploads/actors', 'uploads/cvs', 'uploads/videos', 'uploads/thumbnails'];
+  const dirs = ['uploads/actors', 'uploads/cvs', 'uploads/videos', 'uploads/thumbnails', 'uploads/photo'];
   dirs.forEach(dir => {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
@@ -118,6 +118,32 @@ const videoStorage = multer.diskStorage({
 //   }
 // };
 
+const photoStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/photo/');
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, 'photo-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+// Filtre pour les photos
+const photoFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image/')) {
+    cb(null, true);
+  } else {
+    cb(new Error('Seules les images sont autorisées!'), false);
+  }
+};
+
+// Upload pour les photocards
+const uploadPhoto = multer({
+  storage: photoStorage,
+  fileFilter: photoFilter,
+  limits: { fileSize: 5 * 1024 * 1024 } // 5MB max
+});
+
 const videoFilter = (req, file, cb) => {
   if (file.mimetype.startsWith('video/') || file.mimetype.startsWith('image/')) {
     cb(null, true);
@@ -149,5 +175,7 @@ module.exports = {
   uploadActorPhoto,
   uploadCV,
   uploadVideo,
-  uploadActorComplete  // NOUVEAU
+  uploadActorComplete, // NOUVEAU
+  uploadPhoto
+  
 };

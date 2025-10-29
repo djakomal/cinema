@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getPhotocards, createPhotocard, updatePhotocard, deletePhotocard } from '../../../Services/api';
 
-function ManagePhotocards() {
+function ManagePhoto() {
   const [photocards, setPhotocards] = useState([]);
   const [formData, setFormData] = useState({ 
     title: '', 
@@ -16,7 +16,7 @@ function ManagePhotocards() {
   const [searchTerm, setSearchTerm] = useState('');
   const [previewImages, setPreviewImages] = useState([]);
 
-  const API_URL = 'http://localhost:5000';
+  const API_URL = process.env.REACT_APP_UPLOADS_URL || 'http://localhost:5000';
 
   const styles = {
     page: {
@@ -630,4 +630,4 @@ function ManagePhotocards() {
   );
 }
 
-export default ManagePhotocards;
+export default ManagePhoto;
