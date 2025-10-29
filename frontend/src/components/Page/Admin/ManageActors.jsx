@@ -452,8 +452,22 @@ const handleSubmit = async (e) => {
                     </div>
                   </td>
                   <td style={styles.td}>{actor.bio}</td>
-                  <td style={styles.td}>{actor.photo}</td>
-                  <td style={styles.td}>{actor.cv}</td>
+                  <td style={styles.td}><img src={process.env.REACT_APP_UPLOADS_URL+actor.photo} alt="" srcset=""    style={{
+                        width: '100px',
+                        height: '100px',
+                        objectFit: 'cover',
+                        borderRadius: '8px'
+                      }}/></td>
+                  <td style={styles.td}>
+                    <a 
+                      href={process.env.REACT_APP_UPLOADS_URL+actor.cv} 
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={styles.badge}
+                    >
+                      Voir CV
+                    </a>
+                  </td>
                   <td style={styles.td}>
                     <div style={styles.actions}>
                       <button
