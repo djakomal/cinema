@@ -2,6 +2,7 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const path = require('path');
 // config db 
 const connectDB = require('./Config/db');
 
@@ -13,18 +14,21 @@ connectDB();
 
 const app = express();
 
+// ⚠️ Servir les fichiers statiques - DOIT ÊTRE AVANT LES ROUTES API
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Servir les fichiers statiques
-app.use('/uploads', express.static('uploads'));
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/actors', require('./routes/actors'));
 app.use('/api/videos', require('./routes/videos'));
+app.use('/api/photo', require('./routes/photo'));
 
 // Route de test
 app.get('/', (req, res) => {

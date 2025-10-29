@@ -4,6 +4,7 @@ const Actor = require('../models/actors');
 const auth = require('../middleware/auth');
 const { uploadActorComplete } = require('../middleware/upload');
 
+
 // @route   GET /api/actors
 router.get('/', async (req, res) => {
   try {
