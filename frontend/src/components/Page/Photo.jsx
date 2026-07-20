@@ -99,42 +99,16 @@ function Photo() {
 useEffect(() => {
   const handleKeyDown = (e) => {
     if (!selectedPhotocard) return;
-
-    if (e.key === 'ArrowRight') {
-      if (selectedPhotocard.photos) {
-        const photoArray = Array.isArray(selectedPhotocard.photos)
-          ? selectedPhotocard.photos
-          : [selectedPhotocard.photos];
-        setCurrentPhotoIndex((prev) =>
-          prev === photoArray.length - 1 ? 0 : prev + 1
-        );
-      }
-    }
-
-    if (e.key === 'ArrowLeft') {
-      if (selectedPhotocard.photos) {
-        const photoArray = Array.isArray(selectedPhotocard.photos)
-          ? selectedPhotocard.photos
-          : [selectedPhotocard.photos];
-        setCurrentPhotoIndex((prev) =>
-          prev === 0 ? photoArray.length - 1 : prev - 1
-        );
-      }
-    }
-
-    if (e.key === 'Escape') {
-      setSelectedPhotocard(null);
-      setCurrentPhotoIndex(0);
-      document.body.style.overflow = 'auto';
-    }
+    
+    if (e.key === 'ArrowRight') nextPhoto();
+    if (e.key === 'ArrowLeft') prevPhoto();
+    if (e.key === 'Escape') closeGallery();
   };
 
-  window.addEventListener('keydown', handleKeyDown);
-
-  return () => {
-    window.removeEventListener('keydown', handleKeyDown);
-  };
-}, [selectedPhotocard]);
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedPhotocard, currentPhotoIndex]);
 
   if (loading) {
     return (
