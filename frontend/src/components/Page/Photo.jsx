@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Photocard from '../Photocard';
 import { getPhotocards } from '../../Services/api';
 import '../../styles/PhotocardGallery.css';
@@ -74,7 +74,7 @@ function Photo() {
     document.body.style.overflow = 'auto';
   };
 
-  const nextPhoto = () => {
+  const nextPhoto = useCallback(() => {
     if (selectedPhotocard && selectedPhotocard.photos) {
       const photoArray = Array.isArray(selectedPhotocard.photos) 
         ? selectedPhotocard.photos 
@@ -83,9 +83,9 @@ function Photo() {
         prev === photoArray.length - 1 ? 0 : prev + 1
       );
     }
-  };
+  }, [selectedPhotocard]);
 
-  const prevPhoto = () => {
+  const prevPhoto = useCallback(() => {
     if (selectedPhotocard && selectedPhotocard.photos) {
       const photoArray = Array.isArray(selectedPhotocard.photos) 
         ? selectedPhotocard.photos 
@@ -94,7 +94,7 @@ function Photo() {
         prev === 0 ? photoArray.length - 1 : prev - 1
       );
     }
-  };
+  }, [selectedPhotocard]);
 
 useEffect(() => {
   const handleKeyDown = (e) => {
@@ -118,7 +118,7 @@ useEffect(() => {
   return () => {
     window.removeEventListener('keydown', handleKeyDown);
   };
-}, [selectedPhotocard, currentPhotoIndex]);
+}, [selectedPhotocard, currentPhotoIndex, nextPhoto, prevPhoto]);
 
   if (loading) {
     return (
@@ -198,7 +198,6 @@ const API_URL =
                   e.target.src = 'https://via.placeholder.com/800x600?text=Photo+Indisponible';
                 }}
               />
-
               {Array.isArray(selectedPhotocard.photos) && selectedPhotocard.photos.length > 1 && (
                 <>
                   <button 
@@ -215,14 +214,12 @@ const API_URL =
                   >
                     ›
                   </button>
-
                   <div className="gallery-indicator">
                     {currentPhotoIndex + 1} / {selectedPhotocard.photos.length}
                   </div>
                 </>
               )}
             </div>
-
             <div className="gallery-info">
               {selectedPhotocard.title && <h2>{selectedPhotocard.title}</h2>}
               {selectedPhotocard.description && <p className="photocard-description">{selectedPhotocard.description}</p>}
@@ -232,7 +229,6 @@ const API_URL =
                 </p>
               )}
             </div>
-
             {Array.isArray(selectedPhotocard.photos) && selectedPhotocard.photos.length > 1 && (
               <div className="gallery-thumbnails">
                 {selectedPhotocard.photos.map((photo, index) => (
