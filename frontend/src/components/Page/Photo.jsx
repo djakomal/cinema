@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Photocard from '../Photocard';
 import { getPhotocards } from '../../Services/api';
 import '../../styles/PhotocardGallery.css';
@@ -96,18 +96,45 @@ function Photo() {
     }
   };
 
+useEffect(() => {
   const handleKeyDown = (e) => {
     if (!selectedPhotocard) return;
-    
-    if (e.key === 'ArrowRight') nextPhoto();
-    if (e.key === 'ArrowLeft') prevPhoto();
-    if (e.key === 'Escape') closeGallery();
+
+    if (e.key === 'ArrowRight') {
+      if (selectedPhotocard.photos) {
+        const photoArray = Array.isArray(selectedPhotocard.photos)
+          ? selectedPhotocard.photos
+          : [selectedPhotocard.photos];
+        setCurrentPhotoIndex((prev) =>
+          prev === photoArray.length - 1 ? 0 : prev + 1
+        );
+      }
+    }
+
+    if (e.key === 'ArrowLeft') {
+      if (selectedPhotocard.photos) {
+        const photoArray = Array.isArray(selectedPhotocard.photos)
+          ? selectedPhotocard.photos
+          : [selectedPhotocard.photos];
+        setCurrentPhotoIndex((prev) =>
+          prev === 0 ? photoArray.length - 1 : prev - 1
+        );
+      }
+    }
+
+    if (e.key === 'Escape') {
+      setSelectedPhotocard(null);
+      setCurrentPhotoIndex(0);
+      document.body.style.overflow = 'auto';
+    }
   };
 
-  useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedPhotocard, currentPhotoIndex]);
+  window.addEventListener('keydown', handleKeyDown);
+
+  return () => {
+    window.removeEventListener('keydown', handleKeyDown);
+  };
+}, [selectedPhotocard]);
 
   if (loading) {
     return (
@@ -132,7 +159,8 @@ function Photo() {
   // Utiliser l'URL depuis les variables d'environnement
 //   const API_URL = process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000';
 //   const API_URL = process.env.REACT_APP_UPLOADS_URL || 'http://localhost:5000';
-const API_URL = 'http://localhost:5000';
+const API_URL =
+  process.env.REACT_APP_API_URL || 'http://localhost:5000';
   return (
     <div className="photocard-gallery-page section fade-in">
       <div className="container">
@@ -181,7 +209,7 @@ const API_URL = 'http://localhost:5000';
                     ? selectedPhotocard.photos[currentPhotoIndex]
                     : selectedPhotocard.photos
                 }`}
-                alt={`${selectedPhotocard.title || 'Photocard'} - Photo ${currentPhotoIndex + 1}`}
+                alt={`${selectedPhotocard.title || 'Photocard'} - ${currentPhotoIndex + 1}`}
                 onError={(e) => {
                   e.target.src = 'https://via.placeholder.com/800x600?text=Photo+Indisponible';
                 }}
