@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Photocard from '../Photocard';
 import { getPhotocards } from '../../Services/api';
 import '../../styles/PhotocardGallery.css';

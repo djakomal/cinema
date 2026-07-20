@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 function Photocard({ photocard, onPhotoClick }) {
-  const API_URL = 'http://localhost:5000';
+  const API_URL = process.env.REACT_APP_API_URL;
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // Extraire les données de photocard

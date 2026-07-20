@@ -1,17 +1,51 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const Photocard = require('../models/photo');
+const Photocard = require('../models/Photocard');
 const auth = require('../middleware/auth');
-const { uploadPhoto } = require('../middleware/upload'); // ⚠️ Import
 
 console.log('✅ Route photo.js chargée !');
+
+// Créer le dossier d'upload s'il n'existe pas
+const uploadDir = 'uploads/photo';
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+  console.log(`📁 Dossier créé : ${uploadDir}`);
+}
+
+// Configuration de multer DIRECTEMENT dans ce fichier
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, 'photo-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png|gif|webp/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype);
+    
+    if (extname && mimetype) {
+      return cb(null, true);
+    } else {
+      cb(new Error('Seules les images sont autorisées!'));
+    }
+  }
+});
 
 // GET - Récupérer toutes les photocards
 router.get('/', async (req, res) => {
   try {
-    console.log('📸 Récupération de toutes les photocards...');
+    console.log('📸 GET /api/photo - Récupération des photocards...');
     const photocards = await Photocard.find().sort({ date: -1 });
     console.log(`✅ ${photocards.length} photocard(s) trouvée(s)`);
     res.json(photocards);
@@ -24,36 +58,32 @@ router.get('/', async (req, res) => {
 // GET - Récupérer une photocard par ID
 router.get('/:id', async (req, res) => {
   try {
-    console.log(`📸 Récupération de la photocard ID: ${req.params.id}`);
+    console.log(`📸 GET /api/photo/${req.params.id}`);
     const photocard = await Photocard.findById(req.params.id);
     
     if (!photocard) {
-      console.log('❌ Photocard non trouvée');
       return res.status(404).json({ message: 'Photocard non trouvée' });
     }
     
-    console.log('✅ Photocard trouvée:', photocard.title);
     res.json(photocard);
   } catch (error) {
-    console.error('❌ Erreur GET /photo/:id:', error);
+    console.error('❌ Erreur:', error);
     res.status(500).json({ message: 'Erreur serveur', error: error.message });
   }
 });
 
-// POST - Créer une nouvelle photocard (protégé par auth)
-router.post('/', auth, uploadPhoto.array('photos', 10), async (req, res) => {
+// POST - Créer une photocard
+router.post('/', auth, upload.array('photos', 10), async (req, res) => {
   try {
-    console.log('📤 Création d\'une nouvelle photocard...');
+    console.log('📤 POST /api/photo - Création...');
     console.log('Body:', req.body);
     console.log('Files:', req.files);
 
     if (!req.files || req.files.length === 0) {
-      console.log('❌ Aucune photo fournie');
       return res.status(400).json({ message: 'Au moins une photo est requise' });
     }
 
     const photos = req.files.map(file => `/uploads/photo/${file.filename}`);
-    console.log('📸 Photos uploadées:', photos);
 
     const photocard = new Photocard({
       title: req.body.title,
@@ -63,25 +93,21 @@ router.post('/', auth, uploadPhoto.array('photos', 10), async (req, res) => {
     });
 
     await photocard.save();
-    console.log('✅ Photocard créée avec succès:', photocard._id);
+    console.log('✅ Photocard créée:', photocard._id);
     res.status(201).json(photocard);
   } catch (error) {
-    console.error('❌ Erreur création photocard:', error);
+    console.error('❌ Erreur création:', error);
     res.status(500).json({ message: 'Erreur lors de la création', error: error.message });
   }
 });
 
-// PUT - Mettre à jour une photocard (protégé par auth)
-router.put('/:id', auth, uploadPhoto.array('photos', 10), async (req, res) => {
+// PUT - Mettre à jour une photocard
+router.put('/:id', auth, upload.array('photos', 10), async (req, res) => {
   try {
-    console.log(`📝 Mise à jour de la photocard ID: ${req.params.id}`);
-    console.log('Body:', req.body);
-    console.log('Files:', req.files);
-
-    const photocard = await Photocard.findById(req.params.id);
+    console.log(`📝 PUT /api/photo/${req.params.id}`);
     
+    const photocard = await Photocard.findById(req.params.id);
     if (!photocard) {
-      console.log('❌ Photocard non trouvée');
       return res.status(404).json({ message: 'Photocard non trouvée' });
     }
 
@@ -90,22 +116,17 @@ router.put('/:id', auth, uploadPhoto.array('photos', 10), async (req, res) => {
     photocard.date = req.body.date || photocard.date;
 
     if (req.files && req.files.length > 0) {
-      console.log('🗑️ Suppression des anciennes photos...');
-      
       photocard.photos.forEach(photo => {
         const oldPath = path.join(__dirname, '..', photo);
         if (fs.existsSync(oldPath)) {
           fs.unlinkSync(oldPath);
-          console.log(`✅ Photo supprimée: ${photo}`);
         }
       });
-
       photocard.photos = req.files.map(file => `/uploads/photo/${file.filename}`);
-      console.log('📸 Nouvelles photos:', photocard.photos);
     }
 
     await photocard.save();
-    console.log('✅ Photocard mise à jour avec succès');
+    console.log('✅ Photocard mise à jour');
     res.json(photocard);
   } catch (error) {
     console.error('❌ Erreur mise à jour:', error);
@@ -113,15 +134,13 @@ router.put('/:id', auth, uploadPhoto.array('photos', 10), async (req, res) => {
   }
 });
 
-// DELETE - Supprimer une photocard (protégé par auth)
+// DELETE - Supprimer une photocard
 router.delete('/:id', auth, async (req, res) => {
   try {
-    console.log(`🗑️ Suppression de la photocard ID: ${req.params.id}`);
+    console.log(`🗑️ DELETE /api/photo/${req.params.id}`);
     
     const photocard = await Photocard.findById(req.params.id);
-    
     if (!photocard) {
-      console.log('❌ Photocard non trouvée');
       return res.status(404).json({ message: 'Photocard non trouvée' });
     }
 
@@ -129,12 +148,11 @@ router.delete('/:id', auth, async (req, res) => {
       const filePath = path.join(__dirname, '..', photo);
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
-        console.log(`✅ Photo supprimée: ${photo}`);
       }
     });
 
     await Photocard.findByIdAndDelete(req.params.id);
-    console.log('✅ Photocard supprimée avec succès');
+    console.log('✅ Photocard supprimée');
     res.json({ message: 'Photocard supprimée avec succès' });
   } catch (error) {
     console.error('❌ Erreur suppression:', error);

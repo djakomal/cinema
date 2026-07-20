@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
  function VideoPlayer({ video }) {
   const [isPlaying, setIsPlaying] = useState(false);
-  const API_URL = 'http://localhost:5000';
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
   return (
     <div className="video-card">
