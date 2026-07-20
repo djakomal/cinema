@@ -7,7 +7,7 @@ const path = require('path');
 const connectDB = require('./Config/db');
 
 // Charger les variables d'environnement
-dotenv.config({ path: '.Env' });
+dotenv.config({ path: path.join(__dirname, '.Env') });
 
 // Connexion à la base de données
 connectDB();
