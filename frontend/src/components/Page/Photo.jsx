@@ -193,7 +193,7 @@ const API_URL =
                     ? selectedPhotocard.photos[currentPhotoIndex]
                     : selectedPhotocard.photos
                 }`}
-                alt={`${selectedPhotocard.title || 'Photocard'} - Photo ${currentPhotoIndex + 1}`}
+                alt={`${selectedPhotocard.title || 'Photocard'} - ${currentPhotoIndex + 1}`}
                 onError={(e) => {
                   e.target.src = 'https://via.placeholder.com/800x600?text=Photo+Indisponible';
                 }}
