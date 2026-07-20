@@ -107,7 +107,7 @@ function Photo() {
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedPhotocard, currentPhotoIndex,handleKeyDown]);
+  }, [selectedPhotocard, currentPhotoIndex]);
 
   if (loading) {
     return (
