@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Photocard from '../Photocard';
 import { getPhotocards } from '../../Services/api';
 import '../../styles/PhotocardGallery.css';
@@ -107,7 +107,7 @@ function Photo() {
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedPhotocard, currentPhotoIndex]);
+  }, [selectedPhotocard, currentPhotoIndex,handleKeyDown]);
 
   if (loading) {
     return (
@@ -132,7 +132,8 @@ function Photo() {
   // Utiliser l'URL depuis les variables d'environnement
 //   const API_URL = process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000';
 //   const API_URL = process.env.REACT_APP_UPLOADS_URL || 'http://localhost:5000';
-const API_URL = 'http://localhost:5000';
+const API_URL =
+  process.env.REACT_APP_API_URL || 'http://localhost:5000';
   return (
     <div className="photocard-gallery-page section fade-in">
       <div className="container">
