@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import '../styles/AboutCard.css'; // Importez le fichier CSS
 
 function AboutCard() {
