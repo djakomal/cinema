@@ -96,18 +96,29 @@ function Photo() {
     }
   };
 
+useEffect(() => {
   const handleKeyDown = (e) => {
     if (!selectedPhotocard) return;
-    
-    if (e.key === 'ArrowRight') nextPhoto();
-    if (e.key === 'ArrowLeft') prevPhoto();
-    if (e.key === 'Escape') closeGallery();
+
+    if (e.key === 'ArrowRight') {
+      nextPhoto();
+    }
+
+    if (e.key === 'ArrowLeft') {
+      prevPhoto();
+    }
+
+    if (e.key === 'Escape') {
+      closeGallery();
+    }
   };
 
-  useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedPhotocard, currentPhotoIndex]);
+  window.addEventListener('keydown', handleKeyDown);
+
+  return () => {
+    window.removeEventListener('keydown', handleKeyDown);
+  };
+}, [selectedPhotocard, currentPhotoIndex]);
 
   if (loading) {
     return (
