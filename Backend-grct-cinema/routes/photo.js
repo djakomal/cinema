@@ -3,7 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const Photocard = require('../models/Photocard');
+const Photocard = require('../models/photo');
 const auth = require('../middleware/auth');
 
 console.log('✅ Route photo.js chargée !');
