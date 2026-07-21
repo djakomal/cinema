@@ -1,12 +1,13 @@
 
 
 .navbar {
-  background-color: rgba(0, 0, 0, 0.95);
+  background-color: var(--navbar-bg);
   backdrop-filter: blur(10px);
   position: sticky;
   top: 0;
   z-index: 1000;
   border-bottom: 1px solid var(--border-color);
+  transition: background-color 0.3s ease;
 }
 
 .navbar-content {
@@ -14,6 +15,10 @@
   justify-content: space-between;
   align-items: center;
   padding: 20px 0;
+}
+
+.logo {
+  margin-left: -16px;
 }
 
 .logo img {
@@ -28,7 +33,7 @@
 
 .nav-links {
   display: flex;
-  gap: 40px;
+  gap: 32px;
   align-items: center;
 }
 
@@ -36,7 +41,7 @@
   color: var(--text-white);
   text-decoration: none;
   font-weight: 500;
-  font-size: 16px;
+  font-size: 15px;
   transition: color 0.3s ease;
   position: relative;
 }
@@ -66,6 +71,54 @@
   border-radius: 6px;
 }
 
+.theme-toggle {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 17px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s var(--ease-smooth);
+  color: var(--text);
+  backdrop-filter: blur(8px);
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-toggle::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--gold);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.theme-toggle:hover {
+  border-color: var(--gold);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.2);
+}
+
+.theme-toggle:hover::before {
+  opacity: 0.08;
+}
+
+.theme-toggle:active {
+  transform: scale(0.92);
+}
+
+.theme-toggle-icon {
+  position: relative;
+  z-index: 1;
+  line-height: 1;
+}
+
 .hamburger {
   display: none;
   flex-direction: column;
@@ -76,7 +129,7 @@
 .hamburger span {
   width: 25px;
   height: 3px;
-  background-color: var(--text-white);
+  background-color: var(--text);
   transition: all 0.3s ease;
 }
 

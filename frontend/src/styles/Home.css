@@ -5,9 +5,10 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+  background: linear-gradient(135deg, var(--bg) 0%, var(--bg-elevated) 100%);
   position: relative;
   overflow: hidden;
+  transition: background 0.35s ease;
 }
 
 /* Particules dorées flottantes */
@@ -128,12 +129,13 @@
 
 .hero-subtitle {
   font-size: 20px;
-  color: var(--text-gray);
+  color: var(--text-body);
   margin-bottom: 40px;
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
   animation: fadeInUp 1s ease-out 0.5s both;
+  transition: color 0.35s ease;
 }
 
 .hero-buttons {
@@ -146,9 +148,10 @@
 
 /* Features Section */
 .features {
-  background-color: var(--primary-black);
+  background: var(--bg);
   position: relative;
   overflow: hidden;
+  transition: background 0.35s ease;
 }
 
 /* Particules subtiles pour features */
@@ -193,60 +196,38 @@
   border-radius: 12px;
   border: 1px solid var(--border-color);
   text-align: center;
-  transition: all 0.3s ease;
+  transition: all 0.4s var(--ease-smooth);
   animation: fadeInUp 0.8s ease-out;
   animation-fill-mode: both;
   position: relative;
   overflow: hidden;
 }
 
-/* Lueur animée sur hover */
 .feature-card::before {
   content: '';
   position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  background: linear-gradient(45deg, #f39c12, #ffd966, #f39c12, #ffd966);
-  background-size: 400% 400%;
-  border-radius: 12px;
-  z-index: -1;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--gold);
   opacity: 0;
-  transition: opacity 0.3s ease;
-  animation: borderGlow 4s ease infinite;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
 }
 
-@keyframes borderGlow {
-  0%, 100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
+.feature-card:nth-child(1) { animation-delay: 0.1s; }
+.feature-card:nth-child(2) { animation-delay: 0.2s; }
+.feature-card:nth-child(3) { animation-delay: 0.3s; }
+
+.feature-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--gold);
+  box-shadow: 0 12px 36px rgba(212, 175, 55, 0.12);
 }
 
 .feature-card:hover::before {
-  opacity: 1;
-}
-
-/* Délai d'animation pour chaque carte */
-.feature-card:nth-child(1) {
-  animation-delay: 0.1s;
-}
-
-.feature-card:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.feature-card:nth-child(3) {
-  animation-delay: 0.3s;
-}
-
-.feature-card:hover {
-  transform: translateY(-10px);
-  border-color: var(--accent-orange);
-  box-shadow: 0 10px 30px rgba(243, 156, 18, 0.2);
+  opacity: 0.04;
 }
 
 .feature-icon {
@@ -314,33 +295,32 @@
 .video-card::before {
   content: '';
   position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  background: linear-gradient(45deg, #f39c12, #ffd966, #f39c12, #ffd966);
-  background-size: 400% 400%;
-  border-radius: 12px;
-  z-index: -1;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--gold);
   opacity: 0;
-  transition: opacity 0.3s ease;
-  animation: borderGlow 4s ease infinite;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+  border-radius: 12px;
 }
 
 .video-card:hover::before {
-  opacity: 1;
+  opacity: 0.04;
 }
 
 .video-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(243, 156, 18, 0.2);
+  transform: translateY(-6px);
+  border-color: var(--gold);
+  box-shadow: 0 12px 36px rgba(212, 175, 55, 0.12);
 }
 
 .video-container {
   position: relative;
   width: 100%;
-  padding-top: 56.25%; /* 16:9 Aspect Ratio */
-  background-color: #000;
+  padding-top: 56.25%;
+  background: var(--bg);
 }
 
 .video-thumbnail {

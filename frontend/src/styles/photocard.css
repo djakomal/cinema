@@ -98,7 +98,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #000;
+  background: var(--bg);
   min-height: 400px;
   max-height: 60vh;
 }

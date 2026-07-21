@@ -9,10 +9,10 @@
 }
 
 .notfound-content {
-  background: white;
+  background: var(--bg-elevated);
   padding: 60px 40px;
   border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-lg);
   max-width: 500px;
   width: 100%;
 }
@@ -31,12 +31,12 @@
 .notfound-content h2 {
   font-size: 2rem;
   margin: 20px 0 10px;
-  color: #333;
+  color: var(--text);
 }
 
 .notfound-content p {
   font-size: 1.1rem;
-  color: #666;
+  color: var(--text-body);
   margin-bottom: 30px;
 }
 
@@ -61,11 +61,11 @@
   .notfound-title {
     font-size: 5rem;
   }
-  
+
   .notfound-content h2 {
     font-size: 1.5rem;
   }
-  
+
   .notfound-content {
     padding: 40px 30px;
   }
