@@ -1,16 +1,26 @@
 
+
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
-// config db 
-const connectDB = require('./Config/db');
+// ANCIEN: MongoDB/Mongoose
+// const connectDB = require('./Config/db');
 
-// Charger les variables d'environnement
+// Charger les variables d'environnement AVANT Prisma
 dotenv.config({ path: path.join(__dirname, '.Env') });
 
-// Connexion à la base de données
-connectDB();
+const prisma = require('./Config/prisma');
+
+// ANCIEN: Connexion MongoDB
+// connectDB();
+// Connexion PostgreSQL (Supabase)
+prisma.$connect()
+  .then(() => console.log('✅ PostgreSQL (Supabase) connecté avec succès'))
+  .catch((error) => {
+    console.error('❌ Erreur de connexion PostgreSQL:', error.message);
+    console.error('⚠️ Le serveur continue sans DB - les routes DB échoueront');
+  });
 
 const app = express();
 
@@ -21,8 +31,6 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Servir les fichiers statiques
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));

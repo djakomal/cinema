@@ -59,7 +59,7 @@ function Actors() {
         ) : (
           <div className="actors-grid">
             {actors.map(actor => (
-              <ActorCard key={actor._id} actor={actor} />
+              <ActorCard key={actor.id} actor={actor} />
             ))}
           </div>
         )}

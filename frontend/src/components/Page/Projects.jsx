@@ -59,7 +59,7 @@ function Projects() {
         ) : (
           <div className="videos-grid">
             {videos.map(video => (
-              <VideoPlayer key={video._id} video={video} />
+              <VideoPlayer key={video.id} video={video} />
             ))}
           </div>
         )}

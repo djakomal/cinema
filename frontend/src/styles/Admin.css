@@ -164,6 +164,20 @@
   color: var(--text-muted);
 }
 
+.back-link {
+  color: var(--gold);
+  text-decoration: none;
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+  display: inline-block;
+  transition: opacity 0.2s;
+}
+
+.back-link:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
 @media (max-width: 768px) {
   .admin-form-container {
     padding: 20px;

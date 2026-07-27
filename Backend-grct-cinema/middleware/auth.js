@@ -1,7 +1,9 @@
 
 
 const jwt = require('jsonwebtoken');
-const User = require('../models/user.js');
+// ANCIEN: MongoDB/Mongoose
+// const User = require('../models/user.js');
+const prisma = require('../Config/prisma');
 
 const auth = async (req, res, next) => {
   try {
@@ -15,8 +17,9 @@ const auth = async (req, res, next) => {
     // Vérifier le token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     
-    // Trouver l'utilisateur
-    const user = await User.findById(decoded.userId);
+    // ANCIEN: MongoDB
+    // const user = await User.findById(decoded.userId);
+    const user = await prisma.user.findUnique({ where: { id: decoded.userId } });
     
     if (!user) {
       return res.status(401).json({ message: 'Utilisateur non trouvé.' });

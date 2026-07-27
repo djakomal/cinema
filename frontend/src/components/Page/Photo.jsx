@@ -165,7 +165,7 @@ const API_URL =
               
               return (
                 <Photocard 
-                  key={photocard._id} 
+                  key={photocard.id} 
                   photocard={photocard}
                   onPhotoClick={(photoIndex) => openGallery(photocard, photoIndex)}
                 />

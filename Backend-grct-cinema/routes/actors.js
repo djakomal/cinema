@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const Actor = require('../models/actors');
+// ANCIEN: MongoDB/Mongoose
+// const Actor = require('../models/actors');
+const prisma = require('../Config/prisma');
 const auth = require('../middleware/auth');
 const { uploadActorComplete } = require('../middleware/upload');
 
@@ -8,18 +10,20 @@ const { uploadActorComplete } = require('../middleware/upload');
 // @route   GET /api/actors
 router.get('/', async (req, res) => {
   try {
-    const actors = await Actor.find().sort({ createdAt: -1 });
+    // ANCIEN: const actors = await Actor.find().sort({ createdAt: -1 });
+    const actors = await prisma.actor.findMany({ orderBy: { createdAt: 'desc' } });
     res.json(actors);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Erreur serveur' });
+    res.status(500).json({ message: 'Erreur serveur', error: error.message });
   }
 });
 
 // @route   GET /api/actors/:id
 router.get('/:id', async (req, res) => {
   try {
-    const actor = await Actor.findById(req.params.id);
+    // ANCIEN: const actor = await Actor.findById(req.params.id);
+    const actor = await prisma.actor.findUnique({ where: { id: req.params.id } });
     if (!actor) return res.status(404).json({ message: 'Acteur non trouvé' });
     res.json(actor);
   } catch (error) {
@@ -50,14 +54,18 @@ router.post('/', auth, uploadActorComplete.fields([
       });
     }
     
-    const actor = new Actor({
-      name,
-      bio,
-      photo: `/uploads/actors/${req.files.photo[0].filename}`,
-      cv: `/uploads/cvs/${req.files.cv[0].filename}`
+    // ANCIEN: MongoDB
+    // const actor = new Actor({ name, bio, photo: ..., cv: ... });
+    // await actor.save();
+    const actor = await prisma.actor.create({
+      data: {
+        name,
+        bio,
+        photo: `/uploads/actors/${req.files.photo[0].filename}`,
+        cv: `/uploads/cvs/${req.files.cv[0].filename}`
+      }
     });
     
-    await actor.save();
     res.status(201).json({ message: 'Acteur créé avec succès', actor });
   } catch (error) {
     console.error('Erreur POST:', error);
@@ -75,27 +83,36 @@ router.put('/:id', auth, uploadActorComplete.fields([
     console.log('PUT - Files:', req.files);
     
     const { name, bio } = req.body;
-    const actor = await Actor.findById(req.params.id);
+    
+    // ANCIEN: const actor = await Actor.findById(req.params.id);
+    const actor = await prisma.actor.findUnique({ where: { id: req.params.id } });
     
     if (!actor) {
       return res.status(404).json({ message: 'Acteur non trouvé' });
     }
     
-    if (name) actor.name = name;
-    if (bio) actor.bio = bio;
-    
-    // Mettre à jour la photo si fournie
+    // ANCIEN: MongoDB - mutation + save()
+    // if (name) actor.name = name;
+    // if (bio) actor.bio = bio;
+    // if (req.files?.photo?.[0]) actor.photo = ...;
+    // if (req.files?.cv?.[0]) actor.cv = ...;
+    // await actor.save();
+    const updateData = {};
+    if (name) updateData.name = name;
+    if (bio) updateData.bio = bio;
     if (req.files && req.files.photo && req.files.photo[0]) {
-      actor.photo = `/uploads/actors/${req.files.photo[0].filename}`;
+      updateData.photo = `/uploads/actors/${req.files.photo[0].filename}`;
     }
-    
-    // Mettre à jour le CV si fourni
     if (req.files && req.files.cv && req.files.cv[0]) {
-      actor.cv = `/uploads/cvs/${req.files.cv[0].filename}`;
+      updateData.cv = `/uploads/cvs/${req.files.cv[0].filename}`;
     }
     
-    await actor.save();
-    res.json({ message: 'Acteur mis à jour avec succès', actor });
+    const updatedActor = await prisma.actor.update({
+      where: { id: req.params.id },
+      data: updateData
+    });
+    
+    res.json({ message: 'Acteur mis à jour avec succès', actor: updatedActor });
   } catch (error) {
     console.error('Erreur PUT:', error);
     res.status(500).json({ message: 'Erreur serveur', error: error.message });
@@ -105,9 +122,13 @@ router.put('/:id', auth, uploadActorComplete.fields([
 // @route   DELETE /api/actors/:id
 router.delete('/:id', auth, async (req, res) => {
   try {
-    const actor = await Actor.findById(req.params.id);
+    // ANCIEN: const actor = await Actor.findById(req.params.id);
+    const actor = await prisma.actor.findUnique({ where: { id: req.params.id } });
     if (!actor) return res.status(404).json({ message: 'Acteur non trouvé' });
-    await actor.deleteOne();
+    
+    // ANCIEN: await actor.deleteOne();
+    await prisma.actor.delete({ where: { id: req.params.id } });
+    
     res.json({ message: 'Acteur supprimé avec succès' });
   } catch (error) {
     console.error(error);

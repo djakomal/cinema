@@ -3,7 +3,9 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const Photocard = require('../models/photo');
+// ANCIEN: MongoDB/Mongoose
+// const Photocard = require('../models/photo');
+const prisma = require('../Config/prisma');
 const auth = require('../middleware/auth');
 
 console.log('✅ Route photo.js chargée !');
@@ -46,7 +48,8 @@ const upload = multer({
 router.get('/', async (req, res) => {
   try {
     console.log('📸 GET /api/photo - Récupération des photocards...');
-    const photocards = await Photocard.find().sort({ date: -1 });
+    // ANCIEN: const photocards = await Photocard.find().sort({ date: -1 });
+    const photocards = await prisma.photocard.findMany({ orderBy: { date: 'desc' } });
     console.log(`✅ ${photocards.length} photocard(s) trouvée(s)`);
     res.json(photocards);
   } catch (error) {
@@ -59,7 +62,8 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     console.log(`📸 GET /api/photo/${req.params.id}`);
-    const photocard = await Photocard.findById(req.params.id);
+    // ANCIEN: const photocard = await Photocard.findById(req.params.id);
+    const photocard = await prisma.photocard.findUnique({ where: { id: req.params.id } });
     
     if (!photocard) {
       return res.status(404).json({ message: 'Photocard non trouvée' });
@@ -85,15 +89,19 @@ router.post('/', auth, upload.array('photos', 10), async (req, res) => {
 
     const photos = req.files.map(file => `/uploads/photo/${file.filename}`);
 
-    const photocard = new Photocard({
-      title: req.body.title,
-      description: req.body.description,
-      date: req.body.date || Date.now(),
-      photos: photos
+    // ANCIEN: MongoDB
+    // const photocard = new Photocard({ title, description, date, photos });
+    // await photocard.save();
+    const photocard = await prisma.photocard.create({
+      data: {
+        title: req.body.title,
+        description: req.body.description,
+        date: req.body.date ? new Date(req.body.date) : new Date(),
+        photos: photos
+      }
     });
 
-    await photocard.save();
-    console.log('✅ Photocard créée:', photocard._id);
+    console.log('✅ Photocard créée:', photocard.id);
     res.status(201).json(photocard);
   } catch (error) {
     console.error('❌ Erreur création:', error);
@@ -106,14 +114,22 @@ router.put('/:id', auth, upload.array('photos', 10), async (req, res) => {
   try {
     console.log(`📝 PUT /api/photo/${req.params.id}`);
     
-    const photocard = await Photocard.findById(req.params.id);
+    // ANCIEN: const photocard = await Photocard.findById(req.params.id);
+    const photocard = await prisma.photocard.findUnique({ where: { id: req.params.id } });
     if (!photocard) {
       return res.status(404).json({ message: 'Photocard non trouvée' });
     }
 
-    photocard.title = req.body.title || photocard.title;
-    photocard.description = req.body.description || photocard.description;
-    photocard.date = req.body.date || photocard.date;
+    // ANCIEN: MongoDB - mutation + save()
+    // photocard.title = req.body.title || photocard.title;
+    // photocard.description = req.body.description || photocard.description;
+    // photocard.date = req.body.date || photocard.date;
+    // if (req.files?.length > 0) { ... supprimer anciens fichiers ... photocard.photos = newPhotos; }
+    // await photocard.save();
+    const updateData = {};
+    if (req.body.title) updateData.title = req.body.title;
+    if (req.body.description) updateData.description = req.body.description;
+    if (req.body.date) updateData.date = new Date(req.body.date);
 
     if (req.files && req.files.length > 0) {
       photocard.photos.forEach(photo => {
@@ -122,12 +138,16 @@ router.put('/:id', auth, upload.array('photos', 10), async (req, res) => {
           fs.unlinkSync(oldPath);
         }
       });
-      photocard.photos = req.files.map(file => `/uploads/photo/${file.filename}`);
+      updateData.photos = req.files.map(file => `/uploads/photo/${file.filename}`);
     }
 
-    await photocard.save();
+    const updatedPhotocard = await prisma.photocard.update({
+      where: { id: req.params.id },
+      data: updateData
+    });
+
     console.log('✅ Photocard mise à jour');
-    res.json(photocard);
+    res.json(updatedPhotocard);
   } catch (error) {
     console.error('❌ Erreur mise à jour:', error);
     res.status(500).json({ message: 'Erreur lors de la mise à jour', error: error.message });
@@ -139,7 +159,8 @@ router.delete('/:id', auth, async (req, res) => {
   try {
     console.log(`🗑️ DELETE /api/photo/${req.params.id}`);
     
-    const photocard = await Photocard.findById(req.params.id);
+    // ANCIEN: const photocard = await Photocard.findById(req.params.id);
+    const photocard = await prisma.photocard.findUnique({ where: { id: req.params.id } });
     if (!photocard) {
       return res.status(404).json({ message: 'Photocard non trouvée' });
     }
@@ -151,7 +172,8 @@ router.delete('/:id', auth, async (req, res) => {
       }
     });
 
-    await Photocard.findByIdAndDelete(req.params.id);
+    // ANCIEN: await Photocard.findByIdAndDelete(req.params.id);
+    await prisma.photocard.delete({ where: { id: req.params.id } });
     console.log('✅ Photocard supprimée');
     res.json({ message: 'Photocard supprimée avec succès' });
   } catch (error) {

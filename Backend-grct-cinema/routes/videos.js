@@ -2,7 +2,9 @@
 
 const express = require('express');
 const router = express.Router();
-const Video = require('../models/video');
+// ANCIEN: MongoDB/Mongoose
+// const Video = require('../models/video');
+const prisma = require('../Config/prisma');
 const auth = require('../middleware/auth');
 const { uploadVideo } = require('../middleware/upload');
 
@@ -11,7 +13,8 @@ const { uploadVideo } = require('../middleware/upload');
 // @access  Public
 router.get('/', async (req, res) => {
   try {
-    const videos = await Video.find().sort({ createdAt: -1 });
+    // ANCIEN: const videos = await Video.find().sort({ createdAt: -1 });
+    const videos = await prisma.video.findMany({ orderBy: { createdAt: 'desc' } });
     res.json(videos);
   } catch (error) {
     console.error(error);
@@ -24,7 +27,8 @@ router.get('/', async (req, res) => {
 // @access  Public
 router.get('/:id', async (req, res) => {
   try {
-    const video = await Video.findById(req.params.id);
+    // ANCIEN: const video = await Video.findById(req.params.id);
+    const video = await prisma.video.findUnique({ where: { id: req.params.id } });
     
     if (!video) {
       return res.status(404).json({ message: 'Vidéo non trouvée' });
@@ -67,15 +71,18 @@ router.post('/', auth, async (req, res) => {
         return res.status(400).json({ message: 'Vidéo et miniature requises' });
       }
 
-      const video = new Video({
-        title,
-        description,
-        duration: parseInt(duration),
-        url: `/uploads/videos/${req.files.video[0].filename}`,
-        thumbnail: `/uploads/thumbnails/${req.files.thumbnail[0].filename}`
+      // ANCIEN: MongoDB
+      // const video = new Video({ title, description, duration, url: ..., thumbnail: ... });
+      // await video.save();
+      const video = await prisma.video.create({
+        data: {
+          title,
+          description,
+          duration: parseInt(duration),
+          url: `/uploads/videos/${req.files.video[0].filename}`,
+          thumbnail: `/uploads/thumbnails/${req.files.thumbnail[0].filename}`
+        }
       });
-
-      await video.save();
 
       res.status(201).json({
         message: 'Vidéo créée avec succès',
@@ -92,28 +99,55 @@ router.post('/', auth, async (req, res) => {
 // @desc    Mettre à jour une vidéo
 // @access  Private (Admin)
 router.put('/:id', auth, async (req, res) => {
-  try {
-    const { title, description } = req.body;
-    
-    const video = await Video.findById(req.params.id);
-    
-    if (!video) {
-      return res.status(404).json({ message: 'Vidéo non trouvée' });
+  const upload = uploadVideo.fields([
+    { name: 'video', maxCount: 1 },
+    { name: 'thumbnail', maxCount: 1 }
+  ]);
+
+  upload(req, res, async (err) => {
+    if (err) {
+      return res.status(400).json({ message: err.message });
     }
 
-    if (title) video.title = title;
-    if (description) video.description = description;
+    try {
+      const video = await prisma.video.findUnique({ where: { id: req.params.id } });
+      
+      if (!video) {
+        return res.status(404).json({ message: 'Vidéo non trouvée' });
+      }
 
-    await video.save();
+      const { title, description, duration } = req.body;
 
-    res.json({
-      message: 'Vidéo mise à jour avec succès',
-      video
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Erreur serveur' });
-  }
+      const updateData = {};
+      if (title) updateData.title = title;
+      if (description) updateData.description = description;
+      if (duration) {
+        if (parseInt(duration) > 60) {
+          return res.status(400).json({ message: 'La vidéo ne doit pas dépasser 60 secondes' });
+        }
+        updateData.duration = parseInt(duration);
+      }
+      if (req.files?.video) {
+        updateData.url = `/uploads/videos/${req.files.video[0].filename}`;
+      }
+      if (req.files?.thumbnail) {
+        updateData.thumbnail = `/uploads/thumbnails/${req.files.thumbnail[0].filename}`;
+      }
+
+      const updatedVideo = await prisma.video.update({
+        where: { id: req.params.id },
+        data: updateData
+      });
+
+      res.json({
+        message: 'Vidéo mise à jour avec succès',
+        video: updatedVideo
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Erreur serveur' });
+    }
+  });
 });
 
 // @route   DELETE /api/videos/:id
@@ -121,13 +155,15 @@ router.put('/:id', auth, async (req, res) => {
 // @access  Private (Admin)
 router.delete('/:id', auth, async (req, res) => {
   try {
-    const video = await Video.findById(req.params.id);
+    // ANCIEN: const video = await Video.findById(req.params.id);
+    const video = await prisma.video.findUnique({ where: { id: req.params.id } });
     
     if (!video) {
       return res.status(404).json({ message: 'Vidéo non trouvée' });
     }
 
-    await video.deleteOne();
+    // ANCIEN: await video.deleteOne();
+    await prisma.video.delete({ where: { id: req.params.id } });
 
     res.json({ message: 'Vidéo supprimée avec succès' });
   } catch (error) {
@@ -137,4 +173,3 @@ router.delete('/:id', auth, async (req, res) => {
 });
 
 module.exports = router;
-

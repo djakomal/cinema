@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { getActors, createActor, updateActor, deleteActor } from '../../../Services/api';
 import '../../../styles/ManageActors.css';
 
@@ -48,7 +49,7 @@ function ManageActors() {
       }
 
       if (editingActor) {
-        await updateActor(editingActor._id, formDataToSend);
+        await updateActor(editingActor.id, formDataToSend);
         setMessage('Acteur modifié avec succès!');
       } else {
         await createActor(formDataToSend);
@@ -104,6 +105,7 @@ function ManageActors() {
   return (
     <div className="admin-page section">
       <div className="container">
+        <Link to="/admin/dashboard" className="back-link">← Retour au tableau de bord</Link>
         <div className="header">
           <div>
             <h1 className="title">Gérer les Acteurs</h1>
@@ -142,7 +144,7 @@ function ManageActors() {
             </thead>
             <tbody>
               {filteredActors.map(actor => (
-                <tr key={actor._id}>
+                <tr key={actor.id}>
                   <td>
                     <div className="actor-name">
                       <div className="avatar">{actor.name.charAt(0)}</div>
@@ -170,7 +172,7 @@ function ManageActors() {
                   <td>
                     <div className="actions">
                       <button className="btn-edit" onClick={() => handleEdit(actor)}>✏️</button>
-                      <button className="btn-delete" onClick={() => handleDelete(actor._id)}>🗑️</button>
+                      <button className="btn-delete" onClick={() => handleDelete(actor.id)}>🗑️</button>
                     </div>
                   </td>
                 </tr>

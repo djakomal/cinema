@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+}
+
+model Actor {
+  id        String   @id @default(uuid())
+  name      String
+  bio       String
+  photo     String
+  cv        String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Video {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  url         String
+  thumbnail   String
+  duration    Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Photocard {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  date        DateTime @default(now())
+  photos      String[]
+  createdAt   DateTime @default(now())
+}

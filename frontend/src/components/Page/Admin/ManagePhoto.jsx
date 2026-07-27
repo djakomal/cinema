@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { getPhotocards, createPhotocard, updatePhotocard, deletePhotocard } from '../../../Services/api';
 
 function ManagePhoto() {
@@ -350,7 +351,7 @@ function ManagePhoto() {
       });
 
       if (editingPhotocard) {
-        await updatePhotocard(editingPhotocard._id, formDataToSend);
+        await updatePhotocard(editingPhotocard.id, formDataToSend);
         setMessage('Photocard modifiée avec succès!');
       } else {
         await createPhotocard(formDataToSend);
@@ -419,6 +420,7 @@ function ManagePhoto() {
   return (
     <div style={styles.page}>
       <div style={styles.container}>
+        <Link to="/admin/dashboard" style={{color: '#d4af37', textDecoration: 'none', fontSize: '0.95rem', marginBottom: '20px', display: 'inline-block'}}>← Retour au tableau de bord</Link>
         <div style={styles.header}>
           <div>
             <h1 style={styles.title}>Gérer les Photocards</h1>
@@ -455,7 +457,7 @@ function ManagePhoto() {
             const photoArray = Array.isArray(photocard.photos) ? photocard.photos : [photocard.photos];
             return (
               <div 
-                key={photocard._id} 
+                key={photocard.id} 
                 style={styles.card}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-5px)';
@@ -496,7 +498,7 @@ function ManagePhoto() {
                     </button>
                     <button
                       style={styles.btnDelete}
-                      onClick={() => handleDelete(photocard._id)}
+                      onClick={() => handleDelete(photocard.id)}
                       onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
                       onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
                     >
